@@ -1,10 +1,16 @@
 const express = require("express");
 const app = express();
-const PORT =process.env.PORT || 3001;
 const cors = require("cors");
+const PORT = process.env.PORT || 3001;
+const authRoute = require("./routes/auth");
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:8081"
+  })
+);
 app.use(express.json());
+app.use("/api/users", authRoute);
 app.listen(PORT);
 
 console.log(`Server running on port ${PORT}`);
