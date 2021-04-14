@@ -6,7 +6,13 @@ const MONGODB_URI = process.env.NODE_ENV === 'test'
   ? process.env.TEST_MONGODB_URI
   : process.env.MONGODB_URI
 
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY
+
+const SECRET = process.env.SECRET
+
 module.exports = {
   MONGODB_URI,
-  PORT
+  PORT,
+  STRIPE_SECRET_KEY,
+  SECRET
 }
