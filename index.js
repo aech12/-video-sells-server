@@ -3,9 +3,6 @@ const app = require('./App.js')
 const mongoose = require('mongoose')
 const logger = require('./config/logger')
 
-const morgan = require('morgan')
-app.use(morgan('dev'))
-
 // CONNECT TO DB
 mongoose.connect(config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
   .then(() => {

@@ -1,28 +1,28 @@
 const mongoose = require("mongoose");
 
-const girlSchema = new mongoose.Schema({
-  content: {
+const videoSchema = new mongoose.Schema({
+  title: {
     type: String,
     required: true,
-    minlength: 5,
   },
+  href: String,
   date: Date,
-  girl: {
+  girls: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Girl",
-  },
+  }],
+  likes: Number,
+  picture: String
 });
 
-girlSchema.set("toJSON", {
+videoSchema.set("toJSON", {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();
     delete returnedObject._id;
     delete returnedObject.__v;
-    // the passwordHash should not be revealed
-    delete returnedObject.passwordHash;
   },
 });
 
-const Girl = mongoose.model("Girl", userSchema);
+const Video = mongoose.model.Video || mongoose.model("Video", videoSchema);
 
-module.exports = Girl;
+module.exports = Video;

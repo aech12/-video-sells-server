@@ -1,41 +1,59 @@
-// This example sets up an endpoint using the Express framework.
-// Watch this video to get started: https://youtu.be/rPR2aJ6XnAc.
-const app = require('../App.js')
 const {STRIPE_SECRET_KEY} = require('../config/config')
 const stripe = require('stripe')(STRIPE_SECRET_KEY)
+const stripeRouter = require('express').Router()
 
-app.post('/create-checkout-session', async (req, res) => {
-  const { priceId } = req.body;
+// prod_JIXG5UquuQkAfz price_1IfwBvCxlsK8q03cgGixs6My
+// prod_JIXHRNcbtxYuW0 price_1IfwExCxlsK8q03chdBGFhvY
+// prod_JIXJa7Lwnb0xtU price_1IfwDLCxlsK8q03c3GGKCEwP
 
-  // See https://stripe.com/docs/api/checkout/sessions/create
-  // for additional parameters to pass.
+// ROUTES
+// /create-customer
+// /create-subscription
+
+stripeRouter.post('/create-customer', async (req, res) => {
+  // Save the customer.id in your database alongside your user.
+  // We're simulating authentication with a cookie.
+  // res.cookie('customer', customer.id, { maxAge: 900000, httpOnly: true });
+
   try {
-    const session = await stripe.checkout.sessions.create({
-      mode: 'subscription',
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price: priceId,
-          // For metered billing, do not pass quantity
-          quantity: 1,
-        },
-      ],
-      // {CHECKOUT_SESSION_ID} is a string literal; do not change it!
-      // the actual Session ID is returned in the query parameter when your customer
-      // is redirected to the success page.
-      success_url: 'https://example.com/success.html?session_id={CHECKOUT_SESSION_ID}',
-      cancel_url: 'https://example.com/canceled.html',
-    });
-
-    res.send({
-      sessionId: session.id,
-    });
-  } catch (e) {
-    res.status(400);
-    return res.send({
-      error: {
-        message: e.message,
-      }
-    });
+    const customer = await stripe.customers.create({
+    email: req.body.email,
+  });
+    res.send(customer.id);
+  }
+  catch (err){
+    res.status(500).send(err);
   }
 });
+
+stripeRouter.post('/create-subscription', async (req, res) => {
+  // Attach the payment method to the customer
+  try {
+    await stripe.paymentMethods.attach(req.body.paymentMethodId, {
+      customer: req.body.customerId,
+    });
+  } catch (error) {
+    return res.status('402').send({ error: { message: error.message } });
+  }
+
+  // Change the default invoice settings on the customer to the new payment method
+  await stripe.customers.update(
+    req.body.customerId,
+    {
+      invoice_settings: {
+        default_payment_method: req.body.paymentMethodId,
+      },
+    }
+  );
+
+  // Create the subscription
+  const subscription = await stripe.subscriptions.create({
+    customer: req.body.customerId,
+    items: [{ price: req.body.priceKey }],
+    expand: ['latest_invoice.payment_intent'],
+  });
+
+  res.send(subscription);
+});
+
+module.exports = stripeRouter

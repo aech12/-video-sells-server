@@ -8,11 +8,11 @@ const MONGODB_URI = process.env.NODE_ENV === 'test'
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY
 
-const SECRET = process.env.SECRET
+const JWT_SECRET = process.env.SECRET
 
 module.exports = {
   MONGODB_URI,
   PORT,
   STRIPE_SECRET_KEY,
-  SECRET
+  JWT_SECRET
 }
