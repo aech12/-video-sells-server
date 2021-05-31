@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const usersRouter = require("express").Router();
-const User = require("../models/user");
+const User = require("../models/User");
 
 // signup, "admin/user" roles should be different schemas but since this is a test app it doesn't matter
 usersRouter.post("/", async (request, response) => {

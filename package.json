@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "deploy": "git push heroku main"
   },
   "repository": "https://github.com/aech12/video-sells-server.git",
   "author": "<aech-12@hotmail.com>",
